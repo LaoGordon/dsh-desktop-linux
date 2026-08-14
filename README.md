@@ -18,7 +18,7 @@ Download the release AppImage and verify its SHA-256:
 ```bash
 wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 sha256sum DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
-# expected: 50d54a82efc8600a7d427da8b099053d42980c3ecd2f4e5d2122b38064e7d92e
+# expected: 55b87cd450bffb9610b7551904d00cbbcce750dc8fc5af7056277315cff2faff
 chmod +x DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ./DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ```
