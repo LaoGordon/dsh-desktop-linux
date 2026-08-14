@@ -4,6 +4,7 @@
 
 > **来源声明** — 本仓库是 [`hzhe0083-source/deepseek-harness-desktop`](https://github.com/hzhe0083-source/deepseek-harness-desktop)（亦发布为 `anywhere-labs/deepseek-harness-desktop`）的**独立重命名发行版**，更名为 **dsh-desktop-linux**，以区别于 npm 上无关的 `dsh-desktop` 包。**并非 DeepSeek 官方项目。**
 > - 原始项目：`deepseek-harness-desktop`（MIT）
+> - 版本 `1.0.0` 是本发行版自己的版本号（上游基线：`0.5.1`）；因源码已修改，故与上游区分。
 > - 上游：[hzhe0083-source/deepseek-harness-desktop](https://github.com/hzhe0083-source/deepseek-harness-desktop)
 > - 已保留原始 MIT LICENSE 与版权声明，见 [LICENSE](LICENSE)。
 > - **增强点**：桌面壳现支持 `DSH_DESKTOP_PATCH`、`DSH_DESKTOP_EXTRA_ARGS` 环境变量，让内置的 `dsh web` 通过 `--patch` 加载插件覆盖层；自动更新已指向**本仓库**（而非上游），因此更新后仍保留此增强。
@@ -15,11 +16,11 @@
 下载 Release 的 AppImage 并校验 SHA-256：
 
 ```bash
-wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
-sha256sum DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
-# 期望值: 55e4214bba2f1571b23e6574185f5278fcd2ec1e775d4baae917b9aefb300366
-chmod +x DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
-./DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
+sha256sum DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
+# 期望值: 50d54a82efc8600a7d427da8b099053d42980c3ecd2f4e5d2122b38064e7d92e
+chmod +x DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
+./DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ```
 
 ### 方式二：从源码构建
@@ -29,8 +30,8 @@ git clone https://github.com/LaoGordon/dsh-desktop-linux.git
 cd dsh-desktop-linux
 npm install
 npm run dist:linux    # 产物输出到 dist/：AppImage + deb
-# dist/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
-# dist/DeepSeek-Harness-Desktop-0.5.1-linux-amd64.deb
+# dist/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
+# dist/DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
 ```
 
 两种方式得到的是**同一个** AppImage（同名、同 SHA-256），且都包含 `DSH_DESKTOP_PATCH` 透传增强。
@@ -84,7 +85,7 @@ dsh() {
       esac
     done
     DSH_DESKTOP_PATCH="$patch" \
-      /path/to/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage "${outp[@]}"
+      /path/to/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage "${outp[@]}"
   else
     command dsh "$@"
   fi
@@ -102,7 +103,7 @@ dsh desktop --offline                    # 其余参数照常透传
 ### 方式 B：直接用环境变量
 
 ```bash
-DSH_DESKTOP_PATCH=/你的/cordis.yml ./DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+DSH_DESKTOP_PATCH=/你的/cordis.yml ./DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ```
 
 ### 透传原理

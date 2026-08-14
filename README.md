@@ -4,6 +4,7 @@
 
 > **Provenance** — This is an **independent, renamed release** of [`hzhe0083-source/deepseek-harness-desktop`](https://github.com/hzhe0083-source/deepseek-harness-desktop) (also published as `anywhere-labs/deepseek-harness-desktop`). It is rebranded **dsh-desktop-linux** to distinguish it from the unrelated npm package `dsh-desktop`. **It is not an official DeepSeek project.**
 > - Original project: `deepseek-harness-desktop` (MIT)
+> - Version `1.0.0` is this release's own version number (upstream base: `0.5.1`); it is distinct because the source is modified.
 > - Upstream: [hzhe0083-source/deepseek-harness-desktop](https://github.com/hzhe0083-source/deepseek-harness-desktop)
 > - The original MIT LICENSE and copyright are preserved (see [LICENSE](LICENSE)).
 > - **Enhancement:** the desktop shell honors `DSH_DESKTOP_PATCH` and `DSH_DESKTOP_EXTRA_ARGS`, so the bundled `dsh web` can load a plugin overlay via `--patch`. Auto-update is now pointed at **this** repository (not upstream), so updates keep the enhancement.
@@ -15,11 +16,11 @@
 Download the release AppImage and verify its SHA-256:
 
 ```bash
-wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
-sha256sum DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
-# expected: 55e4214bba2f1571b23e6574185f5278fcd2ec1e775d4baae917b9aefb300366
-chmod +x DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
-./DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
+sha256sum DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
+# expected: 50d54a82efc8600a7d427da8b099053d42980c3ecd2f4e5d2122b38064e7d92e
+chmod +x DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
+./DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ```
 
 ### Option 2 — Build from source
@@ -29,8 +30,8 @@ git clone https://github.com/LaoGordon/dsh-desktop-linux.git
 cd dsh-desktop-linux
 npm install
 npm run dist:linux    # outputs AppImage + deb into dist/
-# dist/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
-# dist/DeepSeek-Harness-Desktop-0.5.1-linux-amd64.deb
+# dist/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
+# dist/DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
 ```
 
 Both options produce the **same** AppImage (same name and SHA-256), and both include the `DSH_DESKTOP_PATCH` pass-through enhancement.
@@ -84,7 +85,7 @@ dsh() {
       esac
     done
     DSH_DESKTOP_PATCH="$patch" \
-      /path/to/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage "${outp[@]}"
+      /path/to/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage "${outp[@]}"
   else
     command dsh "$@"
   fi
@@ -102,7 +103,7 @@ dsh desktop --offline                    # other args pass through unchanged
 ### Method B — environment variable directly
 
 ```bash
-DSH_DESKTOP_PATCH=/your/cordis.yml ./DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+DSH_DESKTOP_PATCH=/your/cordis.yml ./DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ```
 
 ### How it works
