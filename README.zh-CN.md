@@ -1,0 +1,43 @@
+<p align="right"><a href="./README.md">English</a> · <strong>中文</strong></p>
+
+# DeepSeek Harness Desktop
+
+> **📦 来源声明** — 本仓库是 [`anywhere-labs/deepseek-harness-desktop`](https://github.com/anywhere-labs/deepseek-harness-desktop)（上游：`hzhe0083-source/deepseek-harness-desktop`）的**独立重命名发行版**，更名为 **dsh-desktop-linux**，以区别于 npm 上无关的 `dsh-desktop` 包。**并非** DeepSeek 官方项目。
+> - 原始项目：`deepseek-harness-desktop`（MIT）
+> - 上游：[hzhe0083-source/deepseek-harness-desktop](https://github.com/hzhe0083-source/deepseek-harness-desktop)
+> - 已保留原始 MIT LICENSE 与版权声明，见 [LICENSE](LICENSE)。
+> - **增强点**：桌面壳现支持 `DSH_DESKTOP_PATCH`、`DSH_DESKTOP_EXTRA_ARGS` 环境变量，让内置的 `dsh web` 通过 `--patch` 加载插件覆盖层。
+
+## 下载与安装
+
+
+在终端运行：
+
+```sh
+npx deepseek-harness-desktop
+```
+
+会先检查 Node.js 18+。如果没有安装或版本过旧，先下载一份本地 LTS（不会覆盖系统 Node），再启动应用：
+
+```sh
+# macOS / Linux
+curl --proto '=https' --tlsv1.2 -fsSL \
+  https://raw.githubusercontent.com/hzhe0083-source/deepseek-harness-desktop/main/setup.sh | sh
+
+# Windows（PowerShell）
+irm https://raw.githubusercontent.com/hzhe0083-source/deepseek-harness-desktop/main/setup.ps1 | iex
+```
+
+`npx` 会下载并启动最新桌面版，同时写入系统应用图标，之后可以从应用列表打开：
+
+- macOS：挂载 dmg 并启动（加 `--install` 装进「应用程序」）
+- Linux：下载 AppImage、写入 Ubuntu 应用菜单图标并启动；没有 libfuse2 时自动解包
+- Windows：运行 portable 版（免安装）
+
+npm 包只有几 KB，真正的安装包从 GitHub Releases 下载并缓存到本地。再次执行同一命令即可检查更新。
+
+## 应用截图
+
+| macOS | Linux |
+| --- | --- |
+| <img src="assets/screenshots/macos.jpg" alt="DeepSeek Harness Desktop on macOS" width="100%"> | <img src="assets/screenshots/linux.png" alt="DeepSeek Harness Desktop on Linux" width="100%"> |
