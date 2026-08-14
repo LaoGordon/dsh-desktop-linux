@@ -1,57 +1,75 @@
 <p align="right"><a href="./README.md">English</a> · <strong>中文</strong></p>
 
-# DeepSeek Harness Desktop
+# DeepSeek Harness Desktop (dsh-desktop-linux)
 
-> **📦 来源声明** — 本仓库是 [`anywhere-labs/deepseek-harness-desktop`](https://github.com/anywhere-labs/deepseek-harness-desktop)（上游：`hzhe0083-source/deepseek-harness-desktop`）的**独立重命名发行版**，更名为 **dsh-desktop-linux**，以区别于 npm 上无关的 `dsh-desktop` 包。**并非** DeepSeek 官方项目。
+> **来源声明** — 本仓库是 [`hzhe0083-source/deepseek-harness-desktop`](https://github.com/hzhe0083-source/deepseek-harness-desktop)（亦发布为 `anywhere-labs/deepseek-harness-desktop`）的**独立重命名发行版**，更名为 **dsh-desktop-linux**，以区别于 npm 上无关的 `dsh-desktop` 包。**并非 DeepSeek 官方项目。**
 > - 原始项目：`deepseek-harness-desktop`（MIT）
 > - 上游：[hzhe0083-source/deepseek-harness-desktop](https://github.com/hzhe0083-source/deepseek-harness-desktop)
 > - 已保留原始 MIT LICENSE 与版权声明，见 [LICENSE](LICENSE)。
-> - **增强点**：桌面壳现支持 `DSH_DESKTOP_PATCH`、`DSH_DESKTOP_EXTRA_ARGS` 环境变量，让内置的 `dsh web` 通过 `--patch` 加载插件覆盖层。
+> - **增强点**：桌面壳现支持 `DSH_DESKTOP_PATCH`、`DSH_DESKTOP_EXTRA_ARGS` 环境变量，让内置的 `dsh web` 通过 `--patch` 加载插件覆盖层；自动更新已指向**本仓库**（而非上游），因此更新后仍保留此增强。
 
 ## 下载与安装
 
-### 方式 1：下载 Release 的 AppImage（推荐，含插件透传增强）
+### 方式一：下载预编译 AppImage（推荐）
 
-从 [GitHub Release v1.0.0](https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/dsh-desktop-linux-x86_64.AppImage) 下载：
+下载 Release 的 AppImage 并校验 SHA-256：
 
 ```bash
-# 下载
-wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/dsh-desktop-linux-x86_64.AppImage
-# (可选) 校验
-sha256sum dsh-desktop-linux-x86_64.AppImage
-# 期望 SHA256: 5bb6aafd073cbedd8160b6345a064da01c9f01e1e23bb170954837df18c7c402
-# 加执行权限
-chmod +x dsh-desktop-linux-x86_64.AppImage
-# 运行（也可配合 DSH_DESKTOP_PATCH 加载插件，见下方"增强用法"）
-./dsh-desktop-linux-x86_64.AppImage
+wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+sha256sum DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+# 期望值: 55e4214bba2f1571b23e6574185f5278fcd2ec1e775d4baae917b9aefb300366
+chmod +x DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+./DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
 ```
 
-### 方式 2：从源码构建 AppImage
+### 方式二：从源码构建
 
 ```bash
 git clone https://github.com/LaoGordon/dsh-desktop-linux.git
 cd dsh-desktop-linux
 npm install
-npm run dist:linux     # 产出 AppImage + deb 到 dist/
+npm run dist:linux    # 产物输出到 dist/：AppImage + deb
+# dist/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+# dist/DeepSeek-Harness-Desktop-0.5.1-linux-amd64.deb
 ```
 
-> 两种方式得到的 AppImage 都含 `DSH_DESKTOP_PATCH` 透传增强（见下方"增强用法"）。
-> **此发行版已包含我们的 launchForPort patch**，与 GitHub 上游原版 `deepseek-harness-desktop` 不同——原版的 AppImage 不含此增强。
+两种方式得到的是**同一个** AppImage（同名、同 SHA-256），且都包含 `DSH_DESKTOP_PATCH` 透传增强。
 
 ### 依赖
 
-- Node.js 18+（本发行版可在首次启动时自动下载本地 LTS，不替换系统 Node）
-- Linux (x86_64)。AppImage 首次运行自动挂载（缺 libfuse2 时自动 `--appimage-extract` 解包）。
+- Linux x86_64。
+- **运行预编译 AppImage**：无需其他依赖——它自带 Electron，首次启动时会把固定的 `dsh` 运行时下载到用户数据目录（无需系统 Node/npm/dsh）。
+- **从源码构建**：需要 Node.js 18+ 与 npm。
+- 首次运行时 AppImage 会自动挂载；若缺少 `libfuse2` 会自动回退到 `--appimage-extract` 解包运行，无需手动解包。
 
-## 增强用法：加载自定义插件（--patch 透传）
+## 增强用法：通过 `--patch` 加载自定义插件
 
-本发行版改进了桌面壳，让它能把外部 `--patch` 参数传给内部启动的 `dsh web`，从而加载你自己的插件覆盖层。
+原版桌面壳以固定命令启动内部的 `dsh web`。本发行版新增两个环境变量钩子，让你能加载自己的插件覆盖层：
 
-### 两种加载方式
+| 环境变量 | 作用 |
+|---|---|
+| `DSH_DESKTOP_PATCH` | 若设置，则把 `--patch <值>` 注入内部 `dsh web` 命令 |
+| `DSH_DESKTOP_EXTRA_ARGS` | 若设置，则追加任意额外参数（按 shell 规则分词、支持引号） |
 
-**方式 A：用命令行包装 `dsh desktop`（推荐，无需改任何脚本）**
+### 补丁文件（cordis 覆盖层）
 
-在 `~/.bashrc` 加一个 shell 函数，把 `dsh desktop` 统一处理：
+`--patch` 接收一个 cordis patch YAML，用于注册插件。最小示例（`~/cordis.yml`）：
+
+```yaml
+- insert:
+    - id: my-plugin
+      name: /absolute/path/to/plugin.js
+    - id: another-plugin
+      name: /absolute/path/to/plugin.ts
+      config:
+        some: option
+```
+
+本地插件文件请使用绝对路径；已安装的插件可使用 npm 包名。
+
+### 方式 A：用 shell 函数包装 `dsh desktop`（推荐）
+
+在 `~/.bashrc` 中加入以下内容，然后 `source ~/.bashrc`：
 
 ```bash
 dsh() {
@@ -66,7 +84,7 @@ dsh() {
       esac
     done
     DSH_DESKTOP_PATCH="$patch" \
-      /path/to/DeepSeek-Harness-Desktop.AppImage "${outp[@]}"
+      /path/to/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage "${outp[@]}"
   else
     command dsh "$@"
   fi
@@ -74,36 +92,43 @@ dsh() {
 ```
 
 之后：
+
 ```bash
-dsh desktop                                   # 用默认 cordis.yml 加载插件
-dsh desktop --patch /其他/插件.yml              # 指定插件覆盖层
-dsh desktop --offline                         # 其余参数照常透传
+dsh desktop                              # 用默认的 ~/cordis.yml 加载插件
+dsh desktop --patch /你的/其他.yml        # 指定插件覆盖层
+dsh desktop --offline                    # 其余参数照常透传
 ```
 
-**方式 B：直接用环境变量**（不经 shell 函数）
+### 方式 B：直接用环境变量
 
 ```bash
-DSH_DESKTOP_PATCH=/你的/cordis.yml ./DeepSeek-Harness-Desktop.0.5.0.AppImage
+DSH_DESKTOP_PATCH=/你的/cordis.yml ./DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
 ```
 
 ### 透传原理
 
-桌面壳内部启动的 dsh 命令原本固定为：
+内部启动的命令原本为：
 
 ```sh
 dsh web --host 127.0.0.1 --port <随机空闲端口>
 ```
 
-本发行版在 `main/main.js` 的 `launchForPort` 里加了两个**环境变量钩子**：
+设置 `DSH_DESKTOP_PATCH=/a/b.yml` 后变为：
 
-| 环境变量 | 作用 |
-|---|---|
-| `DSH_DESKTOP_PATCH` | 若设置，则注入 `--patch <值>` 到内部的 `dsh web` 命令 |
-| `DSH_DESKTOP_EXTRA_ARGS` | 若设置，则追加任意额外参数（空格/引号分隔） |
+```sh
+dsh web --patch /a/b.yml --host 127.0.0.1 --port <随机空闲端口>
+```
 
-因此 `DSH_DESKTOP_PATCH=/a/b.yml` 会让桌面壳真正以 `dsh web --patch /a/b.yml --host ... --port ...` 启动，从而加载你注册的插件。**端口仍是壳自动分配的随机值**（desktop 自行管理端口，无法经 `--port` 覆盖）。
+端口仍由桌面壳自动分配，无法通过此机制覆盖。
 
-### 关于源码与 AppImage
+## 关于 AppImage 与源码构建
 
-- 本仓库的 `main/main.js` 是**源码**。`launchForPort` 的改动在 `main/main.js`，是单一、小范围的源码补丁，后续合并上游更新时容易保留。
-- 本发行版在 Linux 以 **AppImage** 分发（也可 `npm run dist:linux` 产出 deb）。AppImage 是只读 squashfs，**首次运行会被挂载（必要时 `--appimage-extract` 解包）**，增强就装在解包出的 `resources/app.asar` 里。
+- 本仓库的 `main/main.js` 是**源码**，不是编译产物。唯一的小改动位于 `launchForPort()`（见 `DSH_DESKTOP_PATCH` / `DSH_DESKTOP_EXTRA_ARGS`）。
+- Linux 下 AppImage 是只读 squashfs，首次运行会被挂载（必要时解包），增强就装在打包后的 `resources/app.asar` 里。
+- 自动更新（electron-updater）已指向**本仓库**，因此更新来自本仓库并保留增强；上游原版 AppImage **不含**此补丁。
+
+## 截图
+
+| macOS | Linux |
+| --- | --- |
+| <img src="assets/screenshots/macos.jpg" alt="DeepSeek Harness Desktop on macOS" width="100%"> | <img src="assets/screenshots/linux.png" alt="DeepSeek Harness Desktop on Linux" width="100%"> |

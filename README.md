@@ -1,64 +1,81 @@
 <p align="right"><strong>English</strong> · <a href="./README.zh-CN.md">中文</a></p>
 
-# DeepSeek Harness Desktop
+# DeepSeek Harness Desktop (dsh-desktop-linux)
 
-> **📦 来源声明 / Provenance** — This repository is an **independent, renamed release** of [`anywhere-labs/deepseek-harness-desktop`](https://github.com/anywhere-labs/deepseek-harness-desktop) (upstream: `hzhe0083-source/deepseek-harness-desktop`), forked from upstream and rebranded to **dsh-desktop-linux** to distinguish it from the unrelated npm package `dsh-desktop`. It is **not** an official DeepSeek project.
+> **Provenance** — This is an **independent, renamed release** of [`hzhe0083-source/deepseek-harness-desktop`](https://github.com/hzhe0083-source/deepseek-harness-desktop) (also published as `anywhere-labs/deepseek-harness-desktop`). It is rebranded **dsh-desktop-linux** to distinguish it from the unrelated npm package `dsh-desktop`. **It is not an official DeepSeek project.**
 > - Original project: `deepseek-harness-desktop` (MIT)
 > - Upstream: [hzhe0083-source/deepseek-harness-desktop](https://github.com/hzhe0083-source/deepseek-harness-desktop)
-> - Original MIT LICENSE and copyright are preserved (see [LICENSE](LICENSE)).
-> - **Enhancement:** the desktop shell now honors `DSH_DESKTOP_PATCH` and `DSH_DESKTOP_EXTRA_ARGS` environment variables, letting the bundled `dsh web` load a plugin overlay via `--patch`.
+> - The original MIT LICENSE and copyright are preserved (see [LICENSE](LICENSE)).
+> - **Enhancement:** the desktop shell honors `DSH_DESKTOP_PATCH` and `DSH_DESKTOP_EXTRA_ARGS`, so the bundled `dsh web` can load a plugin overlay via `--patch`. Auto-update is now pointed at **this** repository (not upstream), so updates keep the enhancement.
 
-## Download and install
+## Download & install
 
+### Option 1 — Download the prebuilt AppImage (recommended)
 
-### 方式 1：下载 Release 的 AppImage（推荐，含插件透传增强）
-
-从 [GitHub Release v1.0.0](https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/dsh-desktop-linux-x86_64.AppImage) 下载：
+Download the release AppImage and verify its SHA-256:
 
 ```bash
-# 下载
-wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/dsh-desktop-linux-x86_64.AppImage
-# (可选) 校验
-sha256sum dsh-desktop-linux-x86_64.AppImage
-# 期望 SHA256: 5bb6aafd073cbedd8160b6345a064da01c9f01e1e23bb170954837df18c7c402
-# 加执行权限
-chmod +x dsh-desktop-linux-x86_64.AppImage
-# 运行（也可配合 DSH_DESKTOP_PATCH 加载插件，见下文）
-./dsh-desktop-linux-x86_64.AppImage
+wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+sha256sum DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+# expected: 55e4214bba2f1571b23e6574185f5278fcd2ec1e775d4baae917b9aefb300366
+chmod +x DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+./DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
 ```
 
-### 方式 2：从源码构建 AppImage
+### Option 2 — Build from source
 
 ```bash
 git clone https://github.com/LaoGordon/dsh-desktop-linux.git
 cd dsh-desktop-linux
 npm install
-npm run dist:linux     # 产出 AppImage + deb 到 dist/
+npm run dist:linux    # outputs AppImage + deb into dist/
+# dist/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+# dist/DeepSeek-Harness-Desktop-0.5.1-linux-amd64.deb
 ```
 
-> 两种方式得到的 AppImage 都含 `DSH_DESKTOP_PATCH` 透传增强（见下方"增强用法"）。
-> **此 AppImage 已包含我们的 launchForPort patch**，与 GitHub 上游原版 deepseek-harness-desktop 不同——原版的 AppImage 不含此增强。
+Both options produce the **same** AppImage (same name and SHA-256), and both include the `DSH_DESKTOP_PATCH` pass-through enhancement.
 
-### 依赖
+### Requirements
 
-- Node.js 18+（本发行版可在首次启动时自动下载本地 LTS，不替换系统 Node）
-- Linux (x86_64)。AppImage 首次运行自动挂载（缺 libfuse2 时自动 `--appimage-extract` 解包）。
+- Linux x86_64.
+- **To run the prebuilt AppImage:** nothing else is required — it bundles Electron and self-downloads a pinned `dsh` runtime into the user-data directory on first launch (no system Node/npm/dsh needed).
+- **To build from source:** Node.js 18+ and npm.
+- On first launch the AppImage mounts itself; if `libfuse2` is missing it automatically falls back to `--appimage-extract`-and-run, so no manual extraction is needed.
 
-## 增强用法：加载自定义插件（--patch 透传）
+## Enhanced usage — load custom plugins via `--patch`
 
-本发行版改进了桌面壳，让它能把外部 `--patch` 参数传给内部启动的 `dsh web`，从而加载你自己的插件覆盖层。
+The stock desktop shell launches an internal `dsh web` with a fixed command. This release adds two environment-variable hooks so you can load your own plugin overlay:
 
-### 两种加载方式
+| Environment variable | Effect |
+|---|---|
+| `DSH_DESKTOP_PATCH` | If set, injects `--patch <value>` into the internal `dsh web` command |
+| `DSH_DESKTOP_EXTRA_ARGS` | If set, appends arbitrary extra args (shell-split, quote-aware) |
 
-**方式 A：用命令行包装 `dsh desktop`（推荐，无需改任何脚本）**
+### The patch file (a cordis overlay)
 
-在 `~/.bashrc` 加一个 shell 函数，把 `dsh desktop` 统一处理（缺省用你的 `cordis.yml`，也支持手动指定）：
+`--patch` takes a cordis patch YAML that registers plugins. Minimal example (`~/cordis.yml`):
+
+```yaml
+- insert:
+    - id: my-plugin
+      name: /absolute/path/to/plugin.js
+    - id: another-plugin
+      name: /absolute/path/to/plugin.ts
+      config:
+        some: option
+```
+
+Use absolute paths for local plugin files, or npm package names for installed plugins.
+
+### Method A — shell wrapper for `dsh desktop` (recommended)
+
+Add this to `~/.bashrc`, then `source ~/.bashrc`:
 
 ```bash
 dsh() {
   if [ "$1" = "desktop" ]; then
     shift
-    local patch=/home/<you>/cordis.yml           # ← 改成你的插件注册文件
+    local patch=/home/<you>/cordis.yml            # ← your plugin registration file
     local outp=()
     while [ "$#" -gt 0 ]; do
       case "$1" in
@@ -67,55 +84,48 @@ dsh() {
       esac
     done
     DSH_DESKTOP_PATCH="$patch" \
-      /path/to/DeepSeek-Harness-Desktop.AppImage "${outp[@]}"
+      /path/to/DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage "${outp[@]}"
   else
     command dsh "$@"
   fi
 }
 ```
 
-之后：
-```bash
-dsh desktop                                   # 用默认 cordis.yml 加载插件
-dsh desktop --patch /your/other.yml           # 指定插件覆盖层
-dsh desktop --offline                         # 其余参数照常透传
-```
-
-**方式 B：直接用环境变量**（不经 shell 函数，适合脚本/桌面快捷方式）
+Then:
 
 ```bash
-DSH_DESKTOP_PATCH=/your/cordis.yml ./DeepSeek-Harness-Desktop.0.5.0.AppImage
+dsh desktop                              # loads the default ~/cordis.yml
+dsh desktop --patch /your/other.yml      # loads a specific overlay
+dsh desktop --offline                    # other args pass through unchanged
 ```
 
-### 透传原理
+### Method B — environment variable directly
 
-桌面壳内部启动的 dsh 命令原本固定为：
+```bash
+DSH_DESKTOP_PATCH=/your/cordis.yml ./DeepSeek-Harness-Desktop-0.5.1-linux-x86_64.AppImage
+```
+
+### How it works
+
+The internal command is normally:
 
 ```sh
-dsh web --host 127.0.0.1 --port <随机空闲端口>
+dsh web --host 127.0.0.1 --port <random-free-port>
 ```
 
-本发行版在 `main/main.js` 的 `launchForPort` 里加了两个**环境变量钩子**：
-
-| 环境变量 | 作用 |
-|---|---|
-| `DSH_DESKTOP_PATCH` | 若设置，则注入 `--patch <值>` 到内部的 `dsh web` 命令 |
-| `DSH_DESKTOP_EXTRA_ARGS` | 若设置，则追加任意额外参数（空格/引号分隔），如 `--trusted-host x` |
-
-因此 `DSH_DESKTOP_PATCH=/a/b.yml` 会让桌面壳真正以 `dsh web --patch /a/b.yml --host ... --port ...` 启动，从而加载你注册的插件。**端口仍是壳自动分配的随机值，`--port` 无法由本机制覆盖**（desktop 自行管理端口）。
-
-### 关于 AppImage 与源码构建
-
-- **本仓库的 `main/main.js` 是源码**，不是编译产物。GitHub 上已有的 `*.AppImage` / `*.deb` 不含此 patch；**只有用本仓库源码重新构建、或下载本仓库发布的 Release 才会带增强**。
-- 本发行版在 Linux 上是 **AppImage（或 deb）方式分发的**。AppImage 是只读 squashfs，**第一次运行时会被挂载/（必要时按 `--appimage-extract` 解包）**，本增强正是装在解包出的 `resources/app.asar` 里，不影响日常使用。
-- 如需自己从本仓库构建带增强的 AppImage：
+With `DSH_DESKTOP_PATCH=/a/b.yml` it becomes:
 
 ```sh
-npm install
-npm run dist:linux      # 产出 AppImage + deb 到 dist/
+dsh web --patch /a/b.yml --host 127.0.0.1 --port <random-free-port>
 ```
 
-`launchForPort` 的改动在 `main/main.js`，是单一、小范围的源码补丁，后续合并上游更新时也容易保留。
+The port is still auto-assigned by the shell and cannot be overridden through this mechanism.
+
+## About the AppImage & building
+
+- `main/main.js` here is **source**, not a build artifact. The single, small enhancement lives in `launchForPort()` (see `DSH_DESKTOP_PATCH` / `DSH_DESKTOP_EXTRA_ARGS`).
+- On Linux the AppImage is a read-only squashfs. It is mounted (or extracted) on first run; the enhancement lives inside the packaged `resources/app.asar`.
+- Auto-update (electron-updater) is configured against **this** repository, so updates come from here and keep the enhancement. The upstream original AppImage does **not** contain this patch.
 
 ## Screenshots
 
