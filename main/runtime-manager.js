@@ -6,7 +6,7 @@ const fsp = require('node:fs/promises')
 const os = require('node:os')
 const path = require('node:path')
 
-const REPOSITORY = 'hzhe0083-source/deepseek-harness-desktop'
+const REPOSITORY = 'LaoGordon/dsh-desktop-linux'
 const RUNTIME_PACKAGE = '@deepseek-ai/dsh'
 const SUPPORTED_TARGETS = new Set([
   'linux-x64',
