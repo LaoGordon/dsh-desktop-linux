@@ -23,6 +23,17 @@ chmod +x DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ./DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ```
 
+### Option 1b — Download the .deb package
+
+Prefer a system package? Grab the deb and verify its SHA-256:
+
+```bash
+wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
+sha256sum DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
+# expected: f811663879043a611e13a38789746f0500f0f44cf19656c5f5d6f2218c2c0f2b
+sudo apt install ./DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
+```
+
 ### Option 2 — Build from source
 
 ```bash

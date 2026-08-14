@@ -23,6 +23,17 @@ chmod +x DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ./DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ```
 
+### 方式一（附）：下载 .deb 包
+
+想用系统包的话，下载 deb 并校验 SHA-256：
+
+```bash
+wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
+sha256sum DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
+# 期望值: f811663879043a611e13a38789746f0500f0f44cf19656c5f5d6f2218c2c0f2b
+sudo apt install ./DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
+```
+
 ### 方式二：从源码构建
 
 ```bash
