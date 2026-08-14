@@ -39,8 +39,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "hzhe0083-source",
-        "repo": "deepseek-harness-desktop",
+        "owner": "LaoGordon",
+        "repo": "dsh-desktop-linux",
         "releaseType": "release"
       }
     ],
