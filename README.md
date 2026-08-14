@@ -8,6 +8,41 @@
 > - Original MIT LICENSE and copyright are preserved (see [LICENSE](LICENSE)).
 > - **Enhancement:** the desktop shell now honors `DSH_DESKTOP_PATCH` and `DSH_DESKTOP_EXTRA_ARGS` environment variables, letting the bundled `dsh web` load a plugin overlay via `--patch`.
 
+## Download and install
+
+
+### 方式 1：下载 Release 的 AppImage（推荐，含插件透传增强）
+
+从 [GitHub Release v1.0.0](https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/dsh-desktop-linux-x86_64.AppImage) 下载：
+
+```bash
+# 下载
+wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/dsh-desktop-linux-x86_64.AppImage
+# (可选) 校验
+sha256sum dsh-desktop-linux-x86_64.AppImage
+# 期望 SHA256: 5bb6aafd073cbedd8160b6345a064da01c9f01e1e23bb170954837df18c7c402
+# 加执行权限
+chmod +x dsh-desktop-linux-x86_64.AppImage
+# 运行（也可配合 DSH_DESKTOP_PATCH 加载插件，见下文）
+./dsh-desktop-linux-x86_64.AppImage
+```
+
+### 方式 2：从源码构建 AppImage
+
+```bash
+git clone https://github.com/LaoGordon/dsh-desktop-linux.git
+cd dsh-desktop-linux
+npm install
+npm run dist:linux     # 产出 AppImage + deb 到 dist/
+```
+
+> 两种方式得到的 AppImage 都含 `DSH_DESKTOP_PATCH` 透传增强（见下方"增强用法"）。
+> **此 AppImage 已包含我们的 launchForPort patch**，与 GitHub 上游原版 deepseek-harness-desktop 不同——原版的 AppImage 不含此增强。
+
+### 依赖
+
+- Node.js 18+（本发行版可在首次启动时自动下载本地 LTS，不替换系统 Node）
+- Linux (x86_64)。AppImage 首次运行自动挂载（缺 libfuse2 时自动 `--appimage-extract` 解包）。
 
 ## 增强用法：加载自定义插件（--patch 透传）
 
@@ -81,35 +116,6 @@ npm run dist:linux      # 产出 AppImage + deb 到 dist/
 ```
 
 `launchForPort` 的改动在 `main/main.js`，是单一、小范围的源码补丁，后续合并上游更新时也容易保留。
-
-## Download and install
-
-
-
-In a terminal, run:
-
-```sh
-npx deepseek-harness-desktop
-```
-
-This first checks for Node.js 18+. If Node is missing or too old, download a local LTS copy (it does not replace your system Node) and start the app:
-
-```sh
-# macOS / Linux
-curl --proto '=https' --tlsv1.2 -fsSL \
-  https://raw.githubusercontent.com/hzhe0083-source/deepseek-harness-desktop/main/setup.sh | sh
-
-# Windows (PowerShell)
-irm https://raw.githubusercontent.com/hzhe0083-source/deepseek-harness-desktop/main/setup.ps1 | iex
-```
-
-`npx` then downloads and starts the latest desktop app, and registers a system app icon so you can open it from the application menu later:
-
-- macOS: mounts the dmg and launches it (add `--install` to copy it into Applications)
-- Linux: downloads the AppImage, writes an Ubuntu application-menu icon, and launches it; extracts automatically if libfuse2 is missing
-- Windows: runs the portable build (no installer)
-
-The npm package is only a few KB. The real app is downloaded from GitHub Releases and cached locally. Run the same command again to check for updates.
 
 ## Screenshots
 
