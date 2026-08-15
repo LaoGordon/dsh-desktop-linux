@@ -254,7 +254,8 @@ async function remoteChecksum (fetchImpl, url) {
 /**
  * Resolve (and, when needed, install) the DSH runtime for the desktop app.
  *
- * Priority: DSH_BIN -> machine dsh -> verified managed cache -> download.
+ * Priority: DSH_BIN -> managed (verified cache, else pinned download) ->
+ * machine-installed dsh (fallback for unsupported targets / download errors).
  */
 async function resolveRuntime (options = {}) {
   const env = options.env || process.env
@@ -271,17 +272,28 @@ async function resolveRuntime (options = {}) {
     }
   }
 
-  const installed = findInstalledDsh({
-    env,
-    platform,
-    homedir: options.homedir
-  })
-  if (installed) {
+  // The pinned managed runtime is the default: it is self-contained and
+  // independent of any system Node/npm/dsh. A machine-installed dsh is only a
+  // fallback when the managed runtime cannot be resolved (e.g. unsupported
+  // target, invalid cache, or download failure).
+  try {
+    return await resolveManagedRuntime(options, env, platform, arch)
+  } catch (err) {
+    const installed = findInstalledDsh({
+      env,
+      platform,
+      homedir: options.homedir
+    })
+    if (!installed) throw err
     const installedDir = path.dirname(installed)
     const pathDirs = String(env.PATH || '').split(path.delimiter).filter(Boolean)
     const launchPath = pathDirs.includes(installedDir)
       ? env.PATH || ''
       : `${installedDir}${path.delimiter}${env.PATH || ''}`
+    if (typeof options.onProgress === 'function') {
+      // Close the runtime progress window shown during the failed attempt.
+      options.onProgress({ phase: 'ready', label: `installed dsh (${installed})` })
+    }
     return {
       command: installed,
       prefixArgs: [],
@@ -295,7 +307,9 @@ async function resolveRuntime (options = {}) {
       source: 'installed'
     }
   }
+}
 
+async function resolveManagedRuntime (options, env, platform, arch) {
   // Unsupported systems can still use an explicit or machine-installed dsh;
   // only the managed download is limited to release targets we publish.
   assertSupportedTarget(platform, arch)

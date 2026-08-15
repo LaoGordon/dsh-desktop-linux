@@ -160,7 +160,7 @@ test('asset naming, cache path, and installed lookup are deterministic', async (
   )
 })
 
-test('resolution priority is DSH_BIN, installed dsh, then verified cache', async (t) => {
+test('resolution priority is DSH_BIN, managed runtime, then installed dsh', async (t) => {
   const root = await temporaryDirectory(t)
   const options = baseOptions(root)
   const systemBinDir = path.join(root, 'system-bin')
@@ -197,21 +197,30 @@ test('resolution priority is DSH_BIN, installed dsh, then verified cache', async
   assert.equal(explicitOnUnsupportedTarget.command, 'C:\\tools\\dsh.cmd')
   assert.equal(explicitOnUnsupportedTarget.source, 'env')
 
+  // The verified managed cache wins over a machine-installed dsh.
+  const cachedOverInstalled = await resolveRuntime({
+    ...options,
+    env: { ...options.env, PATH: systemBinDir },
+    fetch: failFetch
+  })
+  assert.equal(cachedOverInstalled.command, options.execPath)
+  assert.deepEqual(cachedOverInstalled.prefixArgs, ['--expose-internals', cachedBin])
+  assert.deepEqual(cachedOverInstalled.env, { ELECTRON_RUN_AS_NODE: '1' })
+  assert.equal(cachedOverInstalled.source, 'managed-cache')
+  assert.equal(fetchCalls, 0)
+
+  // A machine-installed dsh is the fallback when the managed runtime cannot
+  // be resolved (no verified cache and the download fails).
   const installed = await resolveRuntime({
     ...options,
+    userDataDir: path.join(root, 'user-data-fallback'),
     env: { ...options.env, PATH: systemBinDir },
     fetch: failFetch
   })
   assert.equal(installed.command, systemDsh)
   assert.equal(installed.env.PATH, systemBinDir)
   assert.equal(installed.source, 'installed')
-
-  const cached = await resolveRuntime({ ...options, fetch: failFetch })
-  assert.equal(cached.command, options.execPath)
-  assert.deepEqual(cached.prefixArgs, ['--expose-internals', cachedBin])
-  assert.deepEqual(cached.env, { ELECTRON_RUN_AS_NODE: '1' })
-  assert.equal(cached.source, 'managed-cache')
-  assert.equal(fetchCalls, 0)
+  assert.ok(fetchCalls > 0)
 })
 
 test('checksum mismatch aborts without installing the runtime', async (t) => {
