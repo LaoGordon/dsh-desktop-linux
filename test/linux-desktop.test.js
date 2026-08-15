@@ -62,73 +62,32 @@ test('electron-builder ships a multi-size Linux icon set', () => {
   }
 })
 
-test('install.sh writes a Ubuntu application launcher with an icon path', posixOnly, () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dsh-desktop-'))
-  try {
-    const appimage = path.join(dir, 'DeepSeek-Harness-Desktop.AppImage')
-    const icon = path.join(dir, 'deepseek-harness-desktop.png')
-    const desktop = path.join(dir, 'applications', 'deepseek-harness-desktop.desktop')
-    fs.copyFileSync(path.join(root, 'assets', 'icon.png'), icon)
-    fs.writeFileSync(appimage, 'fake-appimage')
-
-    const result = spawnSync('sh', [installScript, '--write-desktop-entry', appimage, icon, desktop], {
-      encoding: 'utf8'
-    })
-    assert.equal(result.status, 0, result.stderr || result.stdout)
-    const body = fs.readFileSync(desktop, 'utf8')
-    assert.match(body, /^\[Desktop Entry\]$/m)
-    assert.match(body, /^Name=DeepSeek Harness Desktop$/m)
-    assert.match(body, /^Type=Application$/m)
-    assert.match(body, /^Categories=Development;$/m)
-    assert.match(body, /^StartupWMClass=deepseek-harness-desktop$/m)
-    assert.match(body, new RegExp(`^Exec=${appimage.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'm'))
-    assert.match(body, /^StartupNotify=false$/m)
-    assert.match(body, new RegExp(`^Icon=${icon.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'm'))
-    assert.match(body, new RegExp(`^TryExec=${appimage.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'm'))
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true })
-  }
+test('install.sh --print-url resolves a pinned version to the deb URL', posixOnly, () => {
+  const result = spawnSync('sh', [installScript, '--print-url'], {
+    encoding: 'utf8',
+    env: { ...process.env, DSH_DESKTOP_VERSION: 'v1.0.2' }
+  })
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+  assert.equal(
+    result.stdout.trim(),
+    'https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.2/DeepSeek-Harness-Desktop-1.0.2-linux-amd64.deb'
+  )
 })
 
-test('install.sh writes a wrapper that extract-and-runs AppImages without fuse2', posixOnly, () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dsh-launcher-'))
-  try {
-    const appimage = path.join(dir, 'DeepSeek-Harness-Desktop.AppImage')
-    const launcher = path.join(dir, 'bin', 'deepseek-harness-desktop')
-    const log = path.join(dir, 'launch.log')
-    const extracted = path.join(dir, 'squashfs-root', 'AppRun')
-    fs.writeFileSync(appimage, 'fake-appimage')
-
-    const result = spawnSync('sh', [installScript, '--write-launcher', appimage, launcher, log, extracted], {
-      encoding: 'utf8'
-    })
-    assert.equal(result.status, 0, result.stderr || result.stdout)
-    const body = fs.readFileSync(launcher, 'utf8')
-    assert.match(body, /^# deepseek-harness-desktop launcher$/m)
-    assert.match(body, /APPIMAGE_EXTRACT_AND_RUN=1/)
-    assert.match(body, /libfuse\.so\.2/)
-    assert.match(body, /--no-sandbox/)
-    assert.equal(fs.statSync(launcher).mode & 0o111, 0o111)
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true })
-  }
+test('install.sh --print-url accepts a bare version number', posixOnly, () => {
+  const result = spawnSync('sh', [installScript, '--print-url'], {
+    encoding: 'utf8',
+    env: { ...process.env, DSH_DESKTOP_VERSION: '1.0.2' }
+  })
+  assert.equal(result.status, 0, result.stderr || result.stdout)
+  assert.match(result.stdout, /\/releases\/download\/v1\.0\.2\//)
 })
 
-test('install.sh still writes a launcher if the icon file is missing', posixOnly, () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dsh-desktop-'))
-  try {
-    const appimage = path.join(dir, 'app.AppImage')
-    const desktop = path.join(dir, 'app.desktop')
-    fs.writeFileSync(appimage, 'fake-appimage')
-
-    const result = spawnSync('sh', [installScript, '--write-desktop-entry', appimage, path.join(dir, 'missing.png'), desktop], {
-      encoding: 'utf8'
-    })
-    assert.equal(result.status, 0, result.stderr || result.stdout)
-    const body = fs.readFileSync(desktop, 'utf8')
-    assert.match(body, /^Icon=deepseek-harness-desktop$/m)
-    assert.match(body, /^StartupWMClass=deepseek-harness-desktop$/m)
-  } finally {
-    fs.rmSync(dir, { recursive: true, force: true })
-  }
+test('install.sh rejects an invalid version', posixOnly, () => {
+  const result = spawnSync('sh', [installScript, '--print-url'], {
+    encoding: 'utf8',
+    env: { ...process.env, DSH_DESKTOP_VERSION: 'bad version' }
+  })
+  assert.notEqual(result.status, 0)
+  assert.match(result.stderr, /invalid version/)
 })

@@ -3,12 +3,12 @@
 //
 // 工作方式：
 //   1. 查询 GitHub Releases 最新版本
-//   2. 按当前平台选择安装包（macOS: zip / dmg；Linux: AppImage / deb；Windows: exe）
+//   2. 按当前平台选择安装包（macOS: zip / dmg；Linux: deb；Windows: exe）
 //   3. 下载到本地缓存（已是最新则直接复用）
 //   4. 启动桌面应用
 //
 // 这是桌面壳的引流入口：npm 包本身只有几 KB，真正的应用仍从
-// GitHub Releases 下载，签名与自动更新链路不受影响。
+// GitHub Releases 下载。
 
 import { spawn, spawnSync } from 'node:child_process'
 import {
@@ -27,7 +27,7 @@ import { homedir } from 'node:os'
 import { basename, dirname, join } from 'node:path'
 import { pipeline } from 'node:stream/promises'
 
-const REPO = 'hzhe0083-source/deepseek-harness-desktop'
+const REPO = 'LaoGordon/dsh-desktop-linux'
 const API_URL = `https://api.github.com/repos/${REPO}/releases/latest`
 const USER_AGENT = 'deepseek-harness-desktop-launcher'
 
@@ -44,8 +44,8 @@ const USAGE = `DeepSeek Harness Desktop 启动器
 
 选项:
   --install             macOS: 安装到「应用程序」后再启动（默认仅解压到缓存运行）
-  --deb                 Linux: 下载 deb 而非 AppImage（下载后提示安装命令）
-  --extract-and-run     Linux: AppImage 用 --appimage-extract-and-run 运行（FUSE 缺失时用）
+  --appimage            Linux: 仅用于旧版本，下载 AppImage（默认优先 deb）
+  --extract-and-run     Linux: 旧版 AppImage 用 --appimage-extract-and-run 运行（FUSE 缺失时用）
   --offline             不检查更新，直接用已缓存的版本
   --force               忽略缓存，强制重新下载
   --check               只检查最新版本与本机缓存，不下载、不启动
@@ -100,7 +100,8 @@ function pickAsset (release) {
 
   if (PLATFORM === 'linux') {
     if (ARCH !== 'x64') fail(`暂不支持 Linux ${ARCH}，请使用 x64 机器或直接到 Releases 下载安装包。`)
-    if (process.argv.includes('--deb')) {
+    // deb 是 Linux 的唯一分发形式；--appimage 仅用于兼容旧版本（v1.0.1 之前）。
+    if (!process.argv.includes('--appimage')) {
       const deb = assets.find((a) => a.name.endsWith('.deb'))
       if (deb) return deb
       fail(`最新版本 ${release.tag_name} 还没有 deb 安装包。`)
@@ -421,11 +422,12 @@ async function main () {
     }
     launchMacApp(app)
   } else if (PLATFORM === 'linux') {
-    if (process.argv.includes('--deb')) {
+    if (asset.name.endsWith('.deb')) {
       console.log(`✓ deb 已下载：${file}`)
       console.log(`安装：sudo apt install "${file}"`)
       process.exit(0)
     }
+    // 旧版本 AppImage 兼容路径
     try {
       const launcher = await installLinuxDesktop(file)
       console.log('启动桌面应用…')

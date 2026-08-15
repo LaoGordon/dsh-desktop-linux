@@ -22,30 +22,17 @@ sha256sum DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
 sudo apt install ./DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
 ```
 
-### Option 2 — Prebuilt AppImage (older releases)
-
-Releases before v1.0.1 ship a portable AppImage (no install needed):
-
-```bash
-wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
-sha256sum DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
-# expected: 55b87cd450bffb9610b7551904d00cbbcce750dc8fc5af7056277315cff2faff
-chmod +x DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
-./DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
-```
-
-### Option 3 — Build from source
+### Option 2 — Build from source
 
 ```bash
 git clone https://github.com/LaoGordon/dsh-desktop-linux.git
 cd dsh-desktop-linux
 npm install
-npm run dist:linux    # outputs AppImage + deb into dist/
-# dist/DeepSeek-Harness-Desktop-1.0.1-linux-x86_64.AppImage
-# dist/DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
+npm run dist:linux    # outputs the deb into dist/
+# dist/DeepSeek-Harness-Desktop-1.0.2-linux-amd64.deb
 ```
 
-All release artifacts are built from this source and include the `DSH_DESKTOP_PATCH` pass-through enhancement. Note that v1.0.1 publishes the deb only (no AppImage asset).
+All release artifacts are built from this source and include the `DSH_DESKTOP_PATCH` pass-through enhancement. The deb is the only distribution format for Linux.
 
 ### Requirements
 

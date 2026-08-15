@@ -22,30 +22,17 @@ sha256sum DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
 sudo apt install ./DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
 ```
 
-### 方式二：预编译 AppImage（旧版本）
-
-v1.0.1 之前的版本提供免安装的 AppImage：
-
-```bash
-wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
-sha256sum DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
-# 期望值: 55b87cd450bffb9610b7551904d00cbbcce750dc8fc5af7056277315cff2faff
-chmod +x DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
-./DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
-```
-
-### 方式三：从源码构建
+### 方式二：从源码构建
 
 ```bash
 git clone https://github.com/LaoGordon/dsh-desktop-linux.git
 cd dsh-desktop-linux
 npm install
-npm run dist:linux    # 产物输出到 dist/：AppImage + deb
-# dist/DeepSeek-Harness-Desktop-1.0.1-linux-x86_64.AppImage
-# dist/DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
+npm run dist:linux    # 产物输出到 dist/：deb
+# dist/DeepSeek-Harness-Desktop-1.0.2-linux-amd64.deb
 ```
 
-所有发布产物均由此源码构建，且都包含 `DSH_DESKTOP_PATCH` 透传增强。注意 v1.0.1 只发布 deb（不含 AppImage 资产）。
+所有发布产物均由此源码构建，且都包含 `DSH_DESKTOP_PATCH` 透传增强。deb 是 Linux 的唯一分发形式。
 
 ### 依赖
 

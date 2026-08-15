@@ -10,7 +10,6 @@ set -eu
 MIN_MAJOR=18
 FALLBACK_NODE_VERSION="v22.18.0"
 NODE_MIRROR="${DSH_NODE_MIRROR:-https://nodejs.org/dist}"
-REPO="hzhe0083-source/deepseek-harness-desktop"
 
 die() {
   printf 'error: %s\n' "$*" >&2

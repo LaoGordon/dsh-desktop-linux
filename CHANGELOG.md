@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.0.2 — 移除 AppImage，Linux 只发 deb
+
+- 构建目标仅保留 deb（AppImage 目标移除）
+- 移除 electron-updater 自更新（Linux 上仅支持 AppImage；deb 的更新交给 apt/dpkg）
+- npm 启动器默认下载 deb（`--appimage` 仅用于兼容旧版本）
+- `install.sh` 重写为 deb 一键安装器（下载 + SHA-256 校验 + apt 安装）
+- 修正 npm 启动器与安装脚本中指向上游仓库的陈旧引用
+
+## 1.0.1 — 托管运行时优先
+
+- 运行时解析顺序改为：`DSH_BIN` → 托管运行时（已校验缓存 / 首次下载）→ 系统 dsh（兜底）
+- 桌面应用完全自包含，不再依赖系统 Node/npm/dsh
+
+## 1.0.0 — 独立重命名发行版
+
+- 独立于上游的版本号，包含 `DSH_DESKTOP_PATCH` / `DSH_DESKTOP_EXTRA_ARGS` 透传增强
+
 ## 0.5.1 — Windows 安装包进入正式 Release
 
 - GitHub Release 增加 Windows x64 NSIS 与 portable
