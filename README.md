@@ -4,7 +4,7 @@
 
 > **Provenance** — This is an **independent, renamed release** of [`hzhe0083-source/deepseek-harness-desktop`](https://github.com/hzhe0083-source/deepseek-harness-desktop) (also published as `anywhere-labs/deepseek-harness-desktop`). It is rebranded **dsh-desktop-linux** to distinguish it from the unrelated npm package `dsh-desktop`. **It is not an official DeepSeek project.**
 > - Original project: `deepseek-harness-desktop` (MIT)
-> - Version `1.0.1` is this release's own version number (upstream base: `0.5.1`); it is distinct because the source is modified. Since v1.0.1 the shell prefers its pinned managed `dsh` runtime (verified cache, else download) and only falls back to a machine-installed dsh, so it runs without any system Node/npm/dsh.
+> - Version `1.0.2` is this release's own version number (upstream base: `0.5.1`); it is distinct because the source is modified. The shell prefers its pinned managed `dsh` runtime (verified cache, else download) and only falls back to a machine-installed dsh, so it runs without any system Node/npm/dsh.
 > - Upstream: [hzhe0083-source/deepseek-harness-desktop](https://github.com/hzhe0083-source/deepseek-harness-desktop)
 > - The original MIT LICENSE and copyright are preserved (see [LICENSE](LICENSE)).
 > - **Enhancement:** the desktop shell honors `DSH_DESKTOP_PATCH` and `DSH_DESKTOP_EXTRA_ARGS`, so the bundled `dsh web` can load a plugin overlay via `--patch`. Auto-update is now pointed at **this** repository (not upstream), so updates keep the enhancement.
@@ -16,10 +16,10 @@
 Grab the deb and verify its SHA-256:
 
 ```bash
-wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.1/DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
-sha256sum DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
-# expected: dd59ad16cce6d5fc98fd2f59bcbf0e8bcb7c43c7caeccee98b2a06e340d5c448
-sudo apt install ./DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
+wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.2/DeepSeek-Harness-Desktop-1.0.2-linux-amd64.deb
+sha256sum DeepSeek-Harness-Desktop-1.0.2-linux-amd64.deb
+# expected: 474eca849cd95db92e8c3db5342a356bfde713389459ed6de43af27a33e543b1
+sudo apt install ./DeepSeek-Harness-Desktop-1.0.2-linux-amd64.deb
 ```
 
 ### Option 2 — Build from source

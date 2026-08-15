@@ -577,7 +577,6 @@ async function boot () {
   appendLog(`dsh ready on ${serverUrl}\n`)
   createMainWindow()
   booting = false
-  startUpdateCheck()
 }
 
 // ---------------------------------------------------------------------------

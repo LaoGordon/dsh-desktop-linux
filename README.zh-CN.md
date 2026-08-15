@@ -4,7 +4,7 @@
 
 > **来源声明** — 本仓库是 [`hzhe0083-source/deepseek-harness-desktop`](https://github.com/hzhe0083-source/deepseek-harness-desktop)（亦发布为 `anywhere-labs/deepseek-harness-desktop`）的**独立重命名发行版**，更名为 **dsh-desktop-linux**，以区别于 npm 上无关的 `dsh-desktop` 包。**并非 DeepSeek 官方项目。**
 > - 原始项目：`deepseek-harness-desktop`（MIT）
-> - 版本 `1.0.1` 是本发行版自己的版本号（上游基线：`0.5.1`）；因源码已修改，故与上游区分。自 v1.0.1 起，桌面壳**优先使用固定的托管 dsh 运行时**（校验缓存，否则自动下载），仅当托管运行时不可用时才回退到系统已安装的 dsh——因此完全不需要系统 Node/npm/dsh。
+> - 版本 `1.0.2` 是本发行版自己的版本号（上游基线：`0.5.1`）；因源码已修改，故与上游区分。桌面壳**优先使用固定的托管 dsh 运行时**（校验缓存，否则自动下载），仅当托管运行时不可用时才回退到系统已安装的 dsh——因此完全不需要系统 Node/npm/dsh。
 > - 上游：[hzhe0083-source/deepseek-harness-desktop](https://github.com/hzhe0083-source/deepseek-harness-desktop)
 > - 已保留原始 MIT LICENSE 与版权声明，见 [LICENSE](LICENSE)。
 > - **增强点**：桌面壳现支持 `DSH_DESKTOP_PATCH`、`DSH_DESKTOP_EXTRA_ARGS` 环境变量，让内置的 `dsh web` 通过 `--patch` 加载插件覆盖层；自动更新已指向**本仓库**（而非上游），因此更新后仍保留此增强。
@@ -16,10 +16,10 @@
 下载 deb 并校验 SHA-256：
 
 ```bash
-wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.1/DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
-sha256sum DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
-# 期望值: dd59ad16cce6d5fc98fd2f59bcbf0e8bcb7c43c7caeccee98b2a06e340d5c448
-sudo apt install ./DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
+wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.2/DeepSeek-Harness-Desktop-1.0.2-linux-amd64.deb
+sha256sum DeepSeek-Harness-Desktop-1.0.2-linux-amd64.deb
+# 期望值: 474eca849cd95db92e8c3db5342a356bfde713389459ed6de43af27a33e543b1
+sudo apt install ./DeepSeek-Harness-Desktop-1.0.2-linux-amd64.deb
 ```
 
 ### 方式二：从源码构建
