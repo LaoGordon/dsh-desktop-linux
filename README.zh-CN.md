@@ -4,16 +4,27 @@
 
 > **来源声明** — 本仓库是 [`hzhe0083-source/deepseek-harness-desktop`](https://github.com/hzhe0083-source/deepseek-harness-desktop)（亦发布为 `anywhere-labs/deepseek-harness-desktop`）的**独立重命名发行版**，更名为 **dsh-desktop-linux**，以区别于 npm 上无关的 `dsh-desktop` 包。**并非 DeepSeek 官方项目。**
 > - 原始项目：`deepseek-harness-desktop`（MIT）
-> - 版本 `1.0.0` 是本发行版自己的版本号（上游基线：`0.5.1`）；因源码已修改，故与上游区分。
+> - 版本 `1.0.1` 是本发行版自己的版本号（上游基线：`0.5.1`）；因源码已修改，故与上游区分。自 v1.0.1 起，桌面壳**优先使用固定的托管 dsh 运行时**（校验缓存，否则自动下载），仅当托管运行时不可用时才回退到系统已安装的 dsh——因此完全不需要系统 Node/npm/dsh。
 > - 上游：[hzhe0083-source/deepseek-harness-desktop](https://github.com/hzhe0083-source/deepseek-harness-desktop)
 > - 已保留原始 MIT LICENSE 与版权声明，见 [LICENSE](LICENSE)。
 > - **增强点**：桌面壳现支持 `DSH_DESKTOP_PATCH`、`DSH_DESKTOP_EXTRA_ARGS` 环境变量，让内置的 `dsh web` 通过 `--patch` 加载插件覆盖层；自动更新已指向**本仓库**（而非上游），因此更新后仍保留此增强。
 
 ## 下载与安装
 
-### 方式一：下载预编译 AppImage（推荐）
+### 方式一：下载 .deb 包（推荐）
 
-下载 Release 的 AppImage 并校验 SHA-256：
+下载 deb 并校验 SHA-256：
+
+```bash
+wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.1/DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
+sha256sum DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
+# 期望值: dd59ad16cce6d5fc98fd2f59bcbf0e8bcb7c43c7caeccee98b2a06e340d5c448
+sudo apt install ./DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
+```
+
+### 方式二：预编译 AppImage（旧版本）
+
+v1.0.1 之前的版本提供免安装的 AppImage：
 
 ```bash
 wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
@@ -23,36 +34,24 @@ chmod +x DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ./DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
 ```
 
-### 方式一（附）：下载 .deb 包
-
-想用系统包的话，下载 deb 并校验 SHA-256：
-
-```bash
-wget https://github.com/LaoGordon/dsh-desktop-linux/releases/download/v1.0.0/DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
-sha256sum DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
-# 期望值: f811663879043a611e13a38789746f0500f0f44cf19656c5f5d6f2218c2c0f2b
-sudo apt install ./DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
-```
-
-### 方式二：从源码构建
+### 方式三：从源码构建
 
 ```bash
 git clone https://github.com/LaoGordon/dsh-desktop-linux.git
 cd dsh-desktop-linux
 npm install
 npm run dist:linux    # 产物输出到 dist/：AppImage + deb
-# dist/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
-# dist/DeepSeek-Harness-Desktop-1.0.0-linux-amd64.deb
+# dist/DeepSeek-Harness-Desktop-1.0.1-linux-x86_64.AppImage
+# dist/DeepSeek-Harness-Desktop-1.0.1-linux-amd64.deb
 ```
 
-两种方式得到的是**同一个** AppImage（同名、同 SHA-256），且都包含 `DSH_DESKTOP_PATCH` 透传增强。
+所有发布产物均由此源码构建，且都包含 `DSH_DESKTOP_PATCH` 透传增强。注意 v1.0.1 只发布 deb（不含 AppImage 资产）。
 
 ### 依赖
 
 - Linux x86_64。
-- **运行预编译 AppImage**：无需其他依赖——它自带 Electron，首次启动时会把固定的 `dsh` 运行时下载到用户数据目录（无需系统 Node/npm/dsh）。
+- **运行应用**：无需其他依赖——它自带 Electron，首次启动时会把固定的 `dsh` 运行时下载到用户数据目录（无需系统 Node/npm/dsh）。仅当托管运行时无法解析时才回退到系统已安装的 dsh。
 - **从源码构建**：需要 Node.js 18+ 与 npm。
-- 首次运行时 AppImage 会自动挂载；若缺少 `libfuse2` 会自动回退到 `--appimage-extract` 解包运行，无需手动解包。
 
 ## 增强用法：通过 `--patch` 加载自定义插件
 
@@ -96,7 +95,7 @@ dsh() {
       esac
     done
     DSH_DESKTOP_PATCH="$patch" \
-      /path/to/DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage "${outp[@]}"
+      /opt/DeepSeek\ Harness\ Desktop/deepseek-harness-desktop "${outp[@]}"  # deb 安装路径
   else
     command dsh "$@"
   fi
@@ -114,7 +113,7 @@ dsh desktop --offline                    # 其余参数照常透传
 ### 方式 B：直接用环境变量
 
 ```bash
-DSH_DESKTOP_PATCH=/你的/cordis.yml ./DeepSeek-Harness-Desktop-1.0.0-linux-x86_64.AppImage
+DSH_DESKTOP_PATCH=/你的/cordis.yml /opt/DeepSeek\ Harness\ Desktop/deepseek-harness-desktop
 ```
 
 ### 透传原理
@@ -133,11 +132,10 @@ dsh web --patch /a/b.yml --host 127.0.0.1 --port <随机空闲端口>
 
 端口仍由桌面壳自动分配，无法通过此机制覆盖。
 
-## 关于 AppImage 与源码构建
+## 关于桌面壳与源码构建
 
-- 本仓库的 `main/main.js` 是**源码**，不是编译产物。唯一的小改动位于 `launchForPort()`（见 `DSH_DESKTOP_PATCH` / `DSH_DESKTOP_EXTRA_ARGS`）。
-- Linux 下 AppImage 是只读 squashfs，首次运行会被挂载（必要时解包），增强就装在打包后的 `resources/app.asar` 里。
-- 自动更新（electron-updater）已指向**本仓库**，因此更新来自本仓库并保留增强；上游原版 AppImage **不含**此补丁。
+- 本仓库的 `main/main.js` 和 `main/runtime-manager.js` 是**源码**，不是编译产物。增强点位于 `launchForPort()`（`DSH_DESKTOP_PATCH` / `DSH_DESKTOP_EXTRA_ARGS`）和 `resolveRuntime()`（托管运行时优先：`DSH_BIN` → 托管缓存/下载 → 系统 dsh 兜底）。
+- 自动更新（electron-updater）已指向**本仓库**，因此更新来自本仓库并保留增强；上游原版**不含**这些补丁。
 
 ## 截图
 
